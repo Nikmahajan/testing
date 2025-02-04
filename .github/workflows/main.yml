@@ -1,3 +1,11 @@
+name: Flyway Migration
+
+on:
+  push:
+    branches:
+      - main  # Run when code is pushed to main
+  workflow_dispatch:  # Allows manual triggering
+
 jobs:
   flyway-migration:
     runs-on: ubuntu-latest
