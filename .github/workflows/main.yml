@@ -25,10 +25,10 @@ jobs:
           tar -xzf flyway.tar.gz
           sudo mv flyway-9.22.3 /opt/flyway
           echo "export PATH=/opt/flyway:$PATH" >> ~/.bashrc
-          source ~/.bashrc
+          echo "export PATH=/opt/flyway:$PATH" >> $GITHUB_ENV
 
       - name: Verify Flyway Installation
-        run: flyway -version
+        run: /opt/flyway/flyway -version
 
       - name: Run Flyway Migrations
         run: |
