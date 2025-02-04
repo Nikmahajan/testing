@@ -1,47 +1,45 @@
- 
- 
 name: Flyway Migration
 
 on:
-push:
-   branches:
-     - main
-workflow_dispatch:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
-flyway-migration:
-   runs-on: ubuntu-latest
-   steps:
-     - name: Checkout repository
-       uses: actions/checkout@v4
+  flyway-migration:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-     - name: Set up Java
-       uses: actions/setup-java@v3
-       with:
-         distribution: 'adopt'
-         java-version: '11'
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '11'
 
-     - name: Install Flyway CLI
-       run: |
-         curl -L https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/11.3.0/flyway-commandline-11.3.0-linux-x64.tar.gz -o flyway.tar.gz
-         tar -xzf flyway.tar.gz
-         sudo mv flyway-11.3.0 /opt/flyway
-         echo "export PATH=/opt/flyway:$PATH" >> $GITHUB_ENV
-         chmod +x /opt/flyway/flyway
+      - name: Install Flyway CLI
+        run: |
+          curl -L https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/11.3.0/flyway-commandline-11.3.0-linux-x64.tar.gz -o flyway.tar.gz
+          tar -xzf flyway.tar.gz
+          sudo mv flyway-11.3.0 /opt/flyway
+          echo "export PATH=/opt/flyway:$PATH" >> $GITHUB_ENV
+          chmod +x /opt/flyway/flyway
 
-     - name: Verify Flyway Installation
-       run: /opt/flyway/flyway version
+      - name: Verify Flyway Installation
+        run: /opt/flyway/flyway version
 
-     - name: Debug Environment Variables
-       run: |
-         echo "FLYWAY_URL=${{ secrets.DB_URL }}"
-         echo "FLYWAY_USER=${{ secrets.DB_USER }}"
-         echo "FLYWAY_PASSWORD=${{ secrets.DB_PASSWORD }}"
+      - name: Debug Environment Variables
+        run: |
+          echo "FLYWAY_URL=${{ secrets.DB_URL }}"
+          echo "FLYWAY_USER=${{ secrets.DB_USER }}"
+          echo "FLYWAY_PASSWORD=${{ secrets.DB_PASSWORD }}"
 
-     - name: Run Flyway Migrations
-       env:
-         FLYWAY_URL: npsql-dv71use2a.ad.solutacloud.com
-         FLYWAY_USER: PMCPService
-         FLYWAY_PASSWORD: TailFin8484
-       run: |
-         /opt/flyway/flyway migrate -locations=filesystem:./migrations
+      - name: Run Flyway Migrations
+        env:
+          FLYWAY_URL: npsql-dv71use2a.ad.solutacloud.com
+          FLYWAY_USER: PMCPService
+          FLYWAY_PASSWORD: TailFin8484
+        run: |
+          /opt/flyway/flyway migrate -locations=filesystem:./migrations
