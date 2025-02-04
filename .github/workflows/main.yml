@@ -30,10 +30,16 @@ jobs:
       - name: Verify Flyway Installation
         run: /opt/flyway/flyway version
 
+      - name: Debug Environment Variables
+        run: |
+          echo "FLYWAY_URL=${{ secrets.DB_URL }}"
+          echo "FLYWAY_USER=${{ secrets.DB_USER }}"
+          echo "FLYWAY_PASSWORD=${{ secrets.DB_PASSWORD }}"
+
       - name: Run Flyway Migrations
         env:
           FLYWAY_URL: ${{ secrets.DB_URL }}
           FLYWAY_USER: ${{ secrets.DB_USER }}
           FLYWAY_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: |
-          /opt/flyway/flyway migrate
+          /opt/flyway/flyway migrate -locations=filesystem:./migrations
