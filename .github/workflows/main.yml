@@ -3,8 +3,8 @@ name: Flyway Migration
 on:
   push:
     branches:
-      - main  # Run when code is pushed to main
-  workflow_dispatch:  # Allows manual triggering
+      - main
+  workflow_dispatch:
 
 jobs:
   flyway-migration:
@@ -19,11 +19,21 @@ jobs:
           distribution: 'adopt'
           java-version: '11'
 
+      - name: Install Flyway CLI
+        run: |
+          curl -L https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/9.22.3/flyway-commandline-9.22.3-linux-x64.tar.gz -o flyway.tar.gz
+          tar -xzf flyway.tar.gz
+          sudo mv flyway-9.22.3 /opt/flyway
+          echo "export PATH=/opt/flyway:$PATH" >> ~/.bashrc
+          source ~/.bashrc
+
+      - name: Verify Flyway Installation
+        run: flyway -version
+
       - name: Run Flyway Migrations
-        uses: red-gate/FlywayGithubAction@v0.1.5
-        with:
-          url: ${{ secrets.DB_URL }}
-          user: ${{ secrets.DB_USER }}
-          password: ${{ secrets.DB_PASSWORD }}
-          locations: filesystem:./migrations
-          extraArgs: -baselineOnMigrate=true
+        run: |
+          /opt/flyway/flyway -url="${{ secrets.DB_URL }}" \
+                             -user="${{ secrets.DB_USER }}" \
+                             -password="${{ secrets.DB_PASSWORD }}" \
+                             -locations=filesystem:./migrations \
+                             migrate
